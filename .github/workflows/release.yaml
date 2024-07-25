@@ -5,7 +5,6 @@ on:
     tags:
       - '*'
 
-
 jobs:
   # use goreleaser to cross-compile go binaries and add them to GitHub release
   goreleaser:
@@ -15,21 +14,21 @@ jobs:
     steps:
       -
         name: Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
           fetch-depth: 0
       -
         name: Set up Go
-        uses: actions/setup-go@v3
+        uses: actions/setup-go@v5
         with:
           go-version: 1.22
       -
         name: Run GoReleaser
-        uses: goreleaser/goreleaser-action@5a54d7e660bda43b405e8463261b3d25631ffe86 #v2.7.0
+        uses: goreleaser/goreleaser-action@v6
+        if: startsWith(github.ref, 'refs/tags/')
         with:
-          distribution: goreleaser
-          version: latest
-          args: release --rm-dist
+          version: '~> v2'
+          args: release --clean
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
@@ -45,10 +44,10 @@ jobs:
 
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Log in to the Container registry
-        uses: docker/login-action@f054a8b539a109f9f41c372932f1ae047eff08c9 #v1.10.0
+        uses: docker/login-action@v3.3.0
         with:
           registry: ${{ env.REGISTRY }}
           username: ${{ github.actor }}
@@ -56,12 +55,12 @@ jobs:
 
       - name: Extract metadata (tags, labels) for Docker
         id: meta
-        uses: docker/metadata-action@8b842e721d38d18bea23b57f4c040e53331f4ca2 #v3.4.1
+        uses: docker/metadata-action@v5.5.1
         with:
           images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
 
       - name: Build and push Docker image
-        uses: docker/build-push-action@1bc1040caef9e604eb543693ba89b5bf4fc80935 #v2.6.1
+        uses: docker/build-push-action@v6.5.0
         with:
           context: .
           push: true
