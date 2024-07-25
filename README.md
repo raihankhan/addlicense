@@ -6,7 +6,7 @@ by scanning directory patterns recursively.
 It modifies all source files in place and avoids adding a license header
 to any file that already has one.
 
-addlicense requires go 1.16 or later.
+addlicense requires go 1.22 or later.
 
 ## install
 
